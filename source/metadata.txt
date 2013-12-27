@@ -28,7 +28,7 @@ tags= Survey design
 
 homepage=http://imasdemase.com
 #tracker=
-#repository=
+repository=https://github.com/jtornero/transectizer
 icon=icon.png
 # experimental flag
 experimental=False
