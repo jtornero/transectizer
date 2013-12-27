@@ -45,7 +45,7 @@ The basic operation of Transectizer is simple: You choose a point layer to opera
 Choosing the layer
 ------------------
 
-![Alt text](./screenshots/choosing_layer.png "Choosing layer in Transectizer")
+![Alt text](./choosing_layer.png "Choosing layer in Transectizer")
 
 This part of Transectizer's main dialog if self-explicative, but there are some caveats to be aware of:
 
@@ -66,7 +66,7 @@ asked for creating them inside your layer or cancel the operation.
 Defining the transect
 ---------------------
 
-![Alt text](./screenshots/transect_definition.png "Defining the transect in Transectizer")
+![Alt text](./transect_definition.png "Defining the transect in Transectizer")
 
 This part of the dialog makes possible to define the line along which the stations are going to be deployed (Yessss, that's the transect!!!)
 
@@ -79,7 +79,7 @@ After defining the line, you have to provide the distance between stations, in t
 
 Station details
 ---------------
-![Alt text](./screenshots/station_details.png "Defining the transect in Transectizer")
+![Alt text](./station_details.png "Providing stations details in Transectizer")
 
 Each of the stations deployed will have some information associated. A transectizer enabled layer has some attributes (see *Choosing the layer* section above)  Transectizer has two operation modes that give the user some control and customization over the information stored with the stations.
 
@@ -87,7 +87,7 @@ Each of the stations deployed will have some information associated. A transecti
 
 **2) Manual Station details:** When creating the transect, you will be offered with a dialog like this: 
 
-![Alt text](./screenshots/manual_naming.png "Defining the transect in Transectizer")
+![Alt text](./manual_naming.png "Manual stations details in Transectizer")
 
 Here, you gain total control over station attributes. You can provide a custom transect/survey name, station prefix, station number and observation for each of the deployed stations. You can fix those variables as you wish and even make the station number sequential as you wish.
 

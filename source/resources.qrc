@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="/plugins/transectizer">
+    <file>icon.png</file>
+  </qresource>
+  <qresource prefix="/plugins/transectizer/help/html">
+    <file>help/html/help_es.html</file>
+    <file>help/html/choosing_layer.png</file>
+    <file>help/html/help_en.html</file>
+    <file>help/html/manual_naming.png</file>
+    <file>help/html/station_details.png</file>
+    <file>help/html/transect_definition.png</file>
+  </qresource>
+</RCC>
