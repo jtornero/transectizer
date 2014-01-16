@@ -1,12 +1,12 @@
 <? Xml version = "1.0"?>
- <? Xml-stylesheet type = "text / xsl" href = "plugins.xsl"?>
+ <? Xml-stylesheet type = "text/xsl" href = "plugins.xsl"?>
  <plugins>
    <pyqgis_plugin name = "transectizer" version = "0.1">
-     <description> This is the test plugin </ description>
-     <homepage>http://imasdemase.com/programacion-2/qgis-plugin-transectizer/</ homepage>
-     <qgis_minimum_version> 2.0 </ qgis_minimum_version>
-     <file_name> source-0.1.zip </ file_name>
-     <author_name> GIS-Lab </ author_name>
-     <download_url> https://github.com/jtornero/transectizer/releases/download/0.1/source-0.1.zip </ download_url>
-   </ Pyqgis_plugin>
- </ Plugins> 
+     <description>Transectizer</description>
+     <homepage>http://imasdemase.com/programacion-2/qgis-plugin-transectizer</homepage>
+     <qgis_minimum_version>2.0</qgis_minimum_version>
+     <file_name>source-0.1.zip</file_name>
+     <author_name>Jorge Tornero</author_name>
+     <download_url>https://github.com/jtornero/transectizer/releases/download/0.1/source-0.1.zip</download_url>
+   </pyqgis_plugin>
+ </plugins> 
