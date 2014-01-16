@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="/static/style/plugins.xsl" ?>
 <plugins>
-    </pyqgis_plugin><pyqgis_plugin name="Transectizer" version="0.1">
+    <pyqgis_plugin name="Transectizer" version="0.1">
         <description><![CDATA[Transectizer]]></description>
         <version>0.1</version>
         <qgis_minimum_version>2.0.0</qgis_minimum_version>
