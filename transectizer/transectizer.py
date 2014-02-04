@@ -69,6 +69,7 @@ class transectizer(QDialog):
         # Create the dialog (after translation) and keep reference
         self.dlg = transectizerDialog()
         
+        
         # Signals and slot connections
         self.dlg.ui.layersCombo.activated.connect(self.checkForTransectizerLayer)
         self.dlg.ui.newTransectButton.clicked.connect(self.newTransect)
@@ -77,6 +78,7 @@ class transectizer(QDialog):
         self.dlg.ui.finalLon.editingFinished.connect(self.calculateBearing)
         self.dlg.ui.autoTransectCheck.toggled.connect(self.autoTransectToggled)
         self.dlg.ui.aboutButton.clicked.connect(self.about)
+        self.dlg.ui.GPSButton.clicked.connect(self.getCoordsFromGPS)
         
         # Initial variables and states which must be set
         self.autoTransectToggled(True)
@@ -191,6 +193,33 @@ class transectizer(QDialog):
         bearing = round( math.degrees(bearing), 0) % 360 
         self.dlg.ui.bearing.setValue(bearing)
     
+    def getCoordsFromGPS(self):
+        """R
+        """
+        # First we get the connectionRegistry
+
+        connectionRegistry = QgsGPSConnectionRegistry().instance()
+
+        # Now the connections list from that registry instance
+
+        connectionList = connectionRegistry.connectionList()
+
+        if connectionList:
+
+            GPSInfo = connectionList[0].currentGPSInformation()
+
+            # And now, we extract the info we want 
+
+            longitude = GPSInfo.longitude
+            latitude = GPSInfo.latitude
+            self.startLat.setValue(latitude)
+            self.startLon.setValue(longitude)
+        
+        else:
+            msg = QMessageBox()
+            msg.setText("<center>Sorry, no GPS connection available</center>")
+            msg.exec_()
+        
     def initGui(self):
         
         # Create action that will start plugin configuration
