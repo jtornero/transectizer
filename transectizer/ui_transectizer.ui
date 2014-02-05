@@ -596,7 +596,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="GPSButton">
     <property name="geometry">
      <rect>
       <x>210</x>

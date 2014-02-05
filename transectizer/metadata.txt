@@ -11,8 +11,8 @@
 [general]
 name=Transectizer
 qgisMinimumVersion=2.0
-description=A plugin to deploy sampling station along a transect.
-version=0.1
+description=Transectizer is a QGIS plugin which provides an easy way to design linear transects with sampling stations distributed at a given distance along the transect.
+version=1.0
 author=Jorge Tornero
 email=jtorlistas@gmail.com
 
@@ -26,8 +26,8 @@ email=jtorlistas@gmail.com
 # tags are comma separated with spaces allowed
 tags= Survey design
 
-homepage=http://imasdemase.com
-#tracker=
+homepage=http://imasdemase.com/programacion-2/qgis-plugin-transectizer/
+tracker=http://hub.qgis.org/projects/transectizer/issues
 repository=https://github.com/jtornero/transectizer
 icon=icon.png
 # experimental flag

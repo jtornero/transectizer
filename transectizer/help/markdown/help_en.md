@@ -75,6 +75,8 @@ You will define your transect providing an initial point for it, a bearing for t
 **1) Automatic transect definition:** you have to click on the canvas and drag the mouse. The initial click defines the initial point of the transect and a second point in the transect is defined when releasing the button. Then, Transectizer calculates the bearing  of your transect for you.
 **2) Manual transect definition:** you have to provide either an inital and final point for the transect (in that case, Transectizer will calculate the bearing for you) or just the initial point of the transect and the bearing in degrees. **In both cases, you must provide the coordinates in the same CRS than your project.**
 
+If you have a GPS connection available, you can set your actual coordinates as initial point for your transect.
+
 After defining the line, you have to provide the distance between stations, in the units chosen in the units combobox and the number of stations to be deployed.
 
 Station details

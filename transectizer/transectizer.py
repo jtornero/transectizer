@@ -194,7 +194,8 @@ class transectizer(QDialog):
         self.dlg.ui.bearing.setValue(bearing)
     
     def getCoordsFromGPS(self):
-        """R
+        """This function grabs coordinates for the initial point
+        of the transect if there is one available GPS connection
         """
         # First we get the connectionRegistry
 
@@ -203,17 +204,30 @@ class transectizer(QDialog):
         # Now the connections list from that registry instance
 
         connectionList = connectionRegistry.connectionList()
-
+              
         if connectionList:
 
             GPSInfo = connectionList[0].currentGPSInformation()
 
             # And now, we extract the info we want 
 
-            longitude = GPSInfo.longitude
-            latitude = GPSInfo.latitude
-            self.startLat.setValue(latitude)
-            self.startLon.setValue(longitude)
+            lon = GPSInfo.longitude
+            lat = GPSInfo.latitude
+            self.dlg.ui.startLat.setValue(lat)
+            self.dlg.ui.startLon.setValue(lon)
+            self.firstSelectedPoint = True
+            
+            # We get and store the point received from GPS
+            mapPoint=QgsPoint(lon, lat)
+            
+            # We need to transform the point received from
+            #the GPS to canvas coordinates to pass it to the 
+            #clickTool in canvas coordinates.
+            
+            mapUnitsPerPixel = self.canvas.mapUnitsPerPixel()
+            transformer = QgsMapToPixel(mapUnitsPerPixel)
+            canvasPoint = transformer.transform(lon,lat)            
+            self.clickTool.setFirstPoint(mapPoint, canvasPoint)
         
         else:
             msg = QMessageBox()
@@ -692,6 +706,7 @@ class clickTool(QgsMapToolEmitPoint):
         self.rubberBand = QgsRubberBand(self.canvas, QGis.Line)
         self.rubberBand.setColor(Qt.red)
         self.rubberBand.setWidth(1)
+        self.alreadyStarted = False
         self.reset()
 
     def reset(self):
@@ -704,30 +719,54 @@ class clickTool(QgsMapToolEmitPoint):
         
         self.rubberBand.reset()
     
+    def setFirstPoint(self,mapPoint,canvasPoint):
+    #def setFirstPoint(self,canvasPoint):
+        """
+        This functions makes possible to programatically pass a point as
+        initial point, simulating a MouseEvent
+        """
+        
+        self.alreadyStarted = True
+        self.startPoint = mapPoint
+        cvPoint = QPoint(canvasPoint.x(),canvasPoint.y())
+        simuClick = QMouseEvent(QEvent.MouseButtonPress,cvPoint,
+            Qt.LeftButton,Qt.LeftButton,Qt.NoModifier,)
+        
+        self.canvasPressEvent(simuClick)
+    
     def canvasPressEvent(self, e):
         """
         Clicks on the canvas cause the tool to be reset and
         the rubberband initialized. The signal iniPointSelected
         is emitted and isEmittingPoint is set to True, so the tool
-        starts 
+        starts to draw the rubberband. If self.alreadyStarted is set
+        to True, means that the first point has been set by other means
         """
         
-        self.reset()
-        self.startPoint = self.toMapCoordinates(e.pos())
+        #self.reset()
+        if not self.alreadyStarted:
+            self.reset()
+            self.startPoint = self.toMapCoordinates(e.pos())
+            
+        else:
+            self.isEmittingPoint = False
+            
         self.endPoint = self.startPoint
         self.rubberBand.reset()
         self.rubberBand.addPoint(self.startPoint)
         self.rubberBand.addPoint(self.endPoint)
         self.isEmittingPoint = True
-        self.iniPointSelected.emit(self.toMapCoordinates(e.pos()))
+        self.iniPointSelected.emit(self.startPoint)
 
     def canvasReleaseEvent(self, e):
         
         """
         When the user releases the button,the signal endPointSelected
-        is emitted and self.isEmittingPoint is set to True.
+        is emitted and self.isEmittingPoint is set to True. Also, sets
+        alreadyStarted to false.
         """
         self.isEmittingPoint = False
+        self.alreadyStarted = False
         self.endPointSelected.emit(self.toMapCoordinates(e.pos()))
         
     def canvasMoveEvent(self, e):

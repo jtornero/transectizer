@@ -54,7 +54,7 @@ class Ui_aboutDialog(object):
         self.closeButton.setObjectName(_fromUtf8("closeButton"))
 
         self.retranslateUi(aboutDialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QObject.connect(self.closeButton, QtCore.SIGNAL(_fromUtf8("clicked()")), aboutDialog.accept)
         QtCore.QMetaObject.connectSlotsByName(aboutDialog)
 
@@ -64,12 +64,12 @@ class Ui_aboutDialog(object):
         self.licenseText.setHtml(_translate("aboutDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><title>License</title><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">GNU GENERAL PUBLIC LICENSE</span></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:small; font-weight:600;\">Version 3, 29 June 2007</span> </p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br /><br />This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<br /><br />You should have received a copy of the GNU General Public License along with this program. If not, see:<br /></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.gnu.org/licenses\"><span style=\" text-decoration: underline; color:#006e28;\">http://www.gnu.org/licenses</span></a></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+"<p align=\"center\" style=\" margin-top:12px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-weight:600;\">Version 3, 29 June 2007</span><span style=\" font-size:9pt;\"> </span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\">This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br /><br />This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<br /><br />You should have received a copy of the GNU General Public License along with this program. If not, see:<br /></span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"http://www.gnu.org/licenses\"><span style=\" font-size:9pt; text-decoration: underline; color:#006e28;\">http://www.gnu.org/licenses</span></a></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;\"><br /></p></body></html>", None))
         self.abotLabel.setText(_translate("aboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:xx-large; font-weight:600;\">Transectizer</span></p><p align=\"center\"><span style=\" font-size:14pt;\">A plugin for transect design in QGIS</span></p><p align=\"center\"><span style=\" font-size:medium; font-weight:600;\">Version 1.0</span></p><p align=\"center\">© 2013, 2014 Jorge Tornero<br/><a href=\"http://imasdemase.com\"><span style=\" text-decoration: underline; color:#006e28;\">http://imasdemase.com</span></a><br/></p></body></html>", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.aboutTab), _translate("aboutDialog", "About", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.helpTab), _translate("aboutDialog", "Help", None))

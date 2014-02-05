@@ -75,6 +75,8 @@ El transecto se definde facilitando un punto inicial, un rumbo para la línea y 
 **1) Definición de transecto automática:** Haga click sobre el mapa y arrastre el ratón. EL click inicial define el punto inicial del transecto y un segundo punto del transecto se define al soltar el botón del ratón. En ese momento, Transectizer calcula el rumbo del transecto para Usted.
 **2) Definición de transecto manual:** Debe facilitar, o bien un punto inicial y otro final para el transecto (en cuyo caso Transectizer calculará el rumbo del transecto resultante) o simplemente el punto inicial del transecto y el rumbo en grados.
 
+Si tiene una conexión GPS disponible, pulsando el botón GPS puede capturar las coordenadas de su posición actual y asignarlas al punto inicial.
+
 **En ambos casos, debe proporcionar las coordenadas de los puntos en el mismo SRC que el proyecto**
 
 Después de definir la línea, debe proporcionar la distancia entre estaciones en las unidades escogidas en el combobox de unidades y el número de estaciones a ser ubicadas.
