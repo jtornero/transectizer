@@ -12,7 +12,7 @@
 name=Transectizer
 qgisMinimumVersion=2.0
 description=Transectizer is a QGIS plugin which provides an easy way to design linear transects with sampling stations distributed at a given distance along the transect.
-version=1.0
+version=2.0
 author=Jorge Tornero
 email=jtorlistas@gmail.com
 
@@ -31,7 +31,7 @@ tracker=http://hub.qgis.org/projects/transectizer/issues
 repository=https://github.com/jtornero/transectizer
 icon=icon.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version
 deprecated=False

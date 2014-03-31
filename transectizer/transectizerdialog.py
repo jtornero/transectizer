@@ -23,14 +23,11 @@
 from PyQt4 import QtCore, QtGui
 from ui_transectizer import Ui_transectizer
 
-class transectizerDialog(QtGui.QDialog):
+class transectizerDialog(QtGui.QDockWidget):
     def __init__(self):
-        QtGui.QDialog.__init__(self)
+        QtGui.QDockWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_transectizer()
         self.ui.setupUi(self)
         
-        # This is a little trick to enable the use of the signal
-        # returnPressed in a PyQt4 comboBox.
-        self.ui.unitsCombo.lineEdit().returnPressed.connect(self.ui.numberOfStations.setFocus)
-        self.ui.unitsCombo.lineEdit().setReadOnly(True)
+        

@@ -2,11 +2,13 @@
 """
 /***************************************************************************
  Transectizer
-                                 A QGIS plugin
+                                 A QGIS plugin for easy design of linear 
+                                 transects with sampling stations distributed
+                                 along the transect at a given distance
  Transectizer plugin
                               -------------------
         begin                : 2013-11-21
-        copyright            : (C) 2013 by Jorge Tornero
+        copyright            : (C) 2013,2014 by Jorge Tornero
         email                : jtorlistas@gmail.com
  ***************************************************************************/
 
@@ -20,30 +22,29 @@
  ***************************************************************************/
 """
 
-# IGUALES OK
-# COMAS
-# LINEBREAKS
-# VINCENTY FORMULA
-
-
 # Import the PyQt and QGIS libraries
 from qgis.gui import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from PyQt4 import uic
+
 # Initialize Qt resources from file resources.py
+# Resources file includes the html and image for
+# the plugin help to work
 import resources_rc
+
 # Import the code for the dialog
 from transectizerdialog import transectizerDialog
 from manualStationNaming import manualNamesDialog
 from aboutdialog import aboutDialog
+
 # import other modules
 import math
 import os.path
 import imp
 
-class transectizer(QDialog):
+class transectizer(QObject):
 
     def __init__(self, iface):
 
@@ -51,48 +52,146 @@ class transectizer(QDialog):
         self.iface = iface
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        QDialog.__init__(self, parent=None)
+        QDockWidget.__init__(self, self.iface.mainWindow())
         self.canvas = self.iface.mapCanvas()
-        self.clickTool = clickTool(self.canvas)
+        self.clickTool = clickTool(self.canvas,self.iface)
+        self.clickTool.deactivate()
         
-        # initialize locale
+        # LOCALIZATION
+        
         locale = QSettings().value("locale/userLocale")[0:2]
-        localePath = os.path.join(self.plugin_dir, 'i18n', 'transectizer_{}.qm'.format(locale))
         
-        if os.path.exists(localePath):
-            self.translator = QTranslator()
-            self.translator.load(localePath)
-
-            if qVersion() > '4.3.3':
-                QCoreApplication.installTranslator(self.translator)
-
+        mainTranslatorPath = os.path.join(\
+            self.plugin_dir, 'i18n', 'ui_transectizer_{0}.qm'.format(locale))
+        codeTranslatorPath = os.path.join(\
+            self.plugin_dir, 'i18n', 'transectizer_{0}.qm'.format(locale))
+        manualStationInfoTranslatorPath = os.path.join(\
+            self.plugin_dir, 'i18n', 'ui_manualStationNaming_{0}.qm'.format(locale))
+        aboutTranslatorPath = os.path.join(\
+            self.plugin_dir, 'i18n', 'ui_about_{0}.qm'.format(locale))
+        helpTranslatorPath = os.path.join(\
+            self.plugin_dir, 'i18n', 'about_dialog_{0}.qm'.format(locale))
+       
+        # Localization
+        self.mainTranslator = QTranslator()
+        self.codeTranslator = QTranslator()
+        self.manualStationInfoTranslator = QTranslator()
+        self.aboutTranslator = QTranslator()
+        self.helpTranslator = QTranslator()
+        
+        self.mainTranslator.load(mainTranslatorPath)
+        self.codeTranslator.load(codeTranslatorPath)
+        self.manualStationInfoTranslator.load(manualStationInfoTranslatorPath)
+        self.aboutTranslator.load(aboutTranslatorPath)
+        self.helpTranslator.load(helpTranslatorPath)
+      
+        
+        QCoreApplication.installTranslator(self.mainTranslator)
+        QCoreApplication.installTranslator(self.codeTranslator)
+        QCoreApplication.installTranslator(self.manualStationInfoTranslator)
+        QCoreApplication.installTranslator(self.aboutTranslator)
+        QCoreApplication.installTranslator(self.helpTranslator)
+                                    
         # Create the dialog (after translation) and keep reference
         self.dlg = transectizerDialog()
         
-        
         # Signals and slot connections
+        
+        self.closeButton = self.dlg.ui.buttonBox.button(QDialogButtonBox.Close)
+        self.closeButton.pressed.connect(self.dlg.close)
+        
         self.dlg.ui.layersCombo.activated.connect(self.checkForTransectizerLayer)
         self.dlg.ui.newTransectButton.clicked.connect(self.newTransect)
         self.dlg.ui.outputToExisting.toggled.connect(self.populateLayersCombo)
         self.dlg.ui.autoNameCheck.toggled.connect(self.autoNamingToggled)
-        self.dlg.ui.finalLon.editingFinished.connect(self.calculateBearing)
+        
         self.dlg.ui.autoTransectCheck.toggled.connect(self.autoTransectToggled)
-        self.dlg.ui.aboutButton.clicked.connect(self.about)
         self.dlg.ui.GPSButton.clicked.connect(self.getCoordsFromGPS)
         
+        self.dlg.ui.buttonBox.helpRequested.connect(self.about)
+       
+        
+        self.dlg.ui.toolBox.currentChanged.connect(self.activateClickTool)
+        self.dlg.visibilityChanged.connect(self.dockClosed)
+        
         # Initial variables and states which must be set
-        self.autoTransectToggled(True)
-        self.autoNaming = True
+        self.finalLat = 0
+        self.finalLon = 0
         
         self.firstSelectedPoint = False
         self.secondSelectedPoint = False
-        
-        self.initialPoint = QgsVertexMarker(self.canvas)
-        self.initialPoint.hide()
-        self.finalPoint = QgsVertexMarker(self.canvas)
-        self.finalPoint.setIconType(QgsVertexMarker.ICON_BOX)
-        self.finalPoint.hide()
 
+        self.autoTransect = False
+        self.autoNaming = True
+        self.existMarkers = False
+        
+    def dockClosed(self, visible):
+        """
+        Unsets Transectizer's maptool and clean the screen 
+        from markers
+        Parameteres:
+            visible: Boolean which states if Transectizer widget
+                     is visible, or not.
+        """
+        if not visible:
+
+            self.canvas.unsetMapTool(self.clickTool)
+            self.destroyMarkers()
+    
+    def autoDefineTransect(self, startPoint, endPoint, bearing):
+        """
+        In the case of Automatic Transect Definition, this functions
+        gets the coordinates and bearing that the clicktool emitted,
+        draws the markers and the rubberdband and sets the inital 
+        point coordinates in the gui for further processing.
+        
+        """
+        # First we set the bearing
+        self.dlg.ui.bearing.setValue(bearing)
+        
+        # Now we set the coordinates in the lineedits, draw
+        # the rubberband and set the positions of the markers.
+        # Coordinatesar properly transformed to project CRS
+        
+        projectSrsEntry = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+        projectSrs = QgsCoordinateReferenceSystem()
+        projectSrs.createFromProj4(projectSrsEntry[0])
+        wgs84 = QgsCoordinateReferenceSystem(4326)
+        transfromFromWgs84 = QgsCoordinateTransform(wgs84, projectSrs)
+        start = transfromFromWgs84.transform(startPoint)
+        end = transfromFromWgs84.transform(endPoint)
+        
+        self.dlg.ui.startLat.setValue(start.y())
+        self.dlg.ui.startLon.setValue(start.x())
+        
+        self.rubberBand.reset()
+        self.rubberBand.addPoint(start)
+        self.rubberBand.addPoint(end)
+        
+        self.initialPoint.setCenter(start)
+        self.initialPoint.show()
+        
+        self.finalPoint.setCenter(end)
+        self.finalPoint.show()
+        
+        
+    def activateClickTool(self, index):
+        """
+        Enables the point selection tool only if the second tab
+        (transect definition) is active. In all other cases, it 
+        is disabled so no accidental chages are made and the
+        mouse cursor is the standard.
+        Parameters:
+            index: Tab of the QToolBox currently active
+        """
+        if (index == 1) and (self.autoTransect):
+            self.autoTransectToggled(True)
+        else:
+            self.clickTool.tabChange=True
+            self.canvas.unsetMapTool(self.clickTool)
+        self.clickTool.alreadyStarted = False
+        self.firstSelectedPoint = False
+        
         
     def updatePos(self, point):
         """
@@ -101,25 +200,53 @@ class transectizer(QDialog):
         Parameters:
             point: a QgsPoint
         """
-        
         # Updates and draws the position of the final point, only if
         # the first point has been already deployed
         if not self.secondSelectedPoint and self.firstSelectedPoint:
+        
             self.finalPoint.setCenter(point)
             self.finalPoint.show()
-            self.dlg.ui.finalLat.setValue(point.y())
-            self.dlg.ui.finalLon.setValue(point.x())
+            self.finalLat = point.y()
+            self.finalLon = point.x()
             self.secondSelectedPoint = True
-            self.calculateBearing()
+                
         # Updates and draws the position of the initial point.
         if not self.firstSelectedPoint:
+           
+            self.destroyMarkers()
+            self.createMarkers()
             self.initialPoint.setCenter(point)
             self.initialPoint.show()
-            self.dlg.ui.startLat.setValue(point.y())
-            self.dlg.ui.startLon.setValue(point.x())
             self.firstSelectedPoint = True
-            self.calculateBearing()
+            
+    def createMarkers(self):
+        """
+        Creates the markers objects for initial and final point
+        of the transect as well as the rubberband which shows
+        the transect being designed when automatic transect
+        definition is enabled
+        """
+        self.existMarkers = True
+        self.initialPoint = QgsVertexMarker(self.canvas)
+        self.initialPoint.hide()
         
+        self.finalPoint = QgsVertexMarker(self.canvas)
+        self.finalPoint.setIconType(QgsVertexMarker.ICON_BOX)
+        self.finalPoint.hide()
+        
+        self.rubberBand = QgsRubberBand(self.canvas, QGis.Line)
+        self.rubberBand.setColor(Qt.green)
+        self.rubberBand.setWidth(2)
+        
+    def destroyMarkers(self):
+        """
+        Destroys the markers and rubberband
+        """
+        if self.existMarkers:
+            self.canvas.scene().removeItem(self.finalPoint)
+            self.canvas.scene().removeItem(self.initialPoint)
+            self.canvas.scene().removeItem(self.rubberBand)
+    
     def resetFirstPoint(self):
         """
         Resets the lineEdit widgets for the initial point, as
@@ -128,132 +255,115 @@ class transectizer(QDialog):
         self.dlg.ui.startLat.setValue(0)
         self.dlg.ui.startLon.setValue(0)
         self.dlg.ui.bearing.clear()
-        self.initialPoint.hide()
         self.firstSelectedPoint = False
     
     def resetSecondPoint(self):
         """
-        Resets the lineEdit widgets for the final point, as
-        well as the calculated bearing
+        Resets the variables for the coordinates of 
+        the final point, as well as the calculated bearing
         """
-        self.dlg.ui.finalLat.setValue(0)
-        self.dlg.ui.finalLon.setValue(0)
+        self.finalLat = 0
+        self.finalLon = 0
         self.dlg.ui.bearing.clear()
-        self.finalPoint.hide()
         self.secondSelectedPoint = False
     
-    def calculateBearing(self):
-        """
-        Convenience function for bearing calculation
-        taking the values from the GUI's lineEdit for
-        transect line initial and final points.
-        """
-        
-        if (not self.firstSelectedPoint) or (not self.secondSelectedPoint):
-            return
-        
-        startLat = self.dlg.ui.startLat.value()
-        startLon = self.dlg.ui.startLon.value()
-        endLat = self.dlg.ui.finalLat.value()
-        endLon = self.dlg.ui.finalLon.value()
-        initialPoint = QgsPoint(startLon, startLat)
-        endPoint = QgsPoint(endLon, endLat)
-        self.calculateBearingFromPoints(initialPoint, endPoint)
-
-    def calculateBearingFromPoints(self, initialPoint, endPoint):
-        
-        """
-        This function calculates the bearing from an initial QGsPoint
-        to a final QgsPoint. All calculations are made on the basis of
-        a decimal degrees in WGS84.
-        Parameters:
-            initialPoint: QgsPoint
-            endPoint: QgsPoint
-        """
-        # Transform the points provided to WGS84. The transformation
-        # is made with a QgsCoordinateTransform created when the plugin
-        # is loaded
-        
-        initialPoint = self.transform.transform(initialPoint)
-        endPoint = self.transform.transform(endPoint)
-        
-        # First coords to radians
-        startLat = math.radians(initialPoint.y())
-        startLon = math.radians(initialPoint.x())
-        endLat = math.radians(endPoint.y())
-        endLon = math.radians(endPoint.x())
-        
-        # Calculation. The bearing is obtained in azimuth and radians and must be
-        # transformed to degrees and bearing
-        deltaLon = endLon - startLon
-        y = math.sin(deltaLon) * math.cos(endLat)
-        x = math.cos(startLat) * math.sin(endLat) - math.sin(startLat) *\
-            math.cos(endLat) * math.cos(deltaLon)
-        bearing = (5 * math.pi / 2) - math.atan2(x, y)
-        bearing = round( math.degrees(bearing), 0) % 360 
-        self.dlg.ui.bearing.setValue(bearing)
     
     def getCoordsFromGPS(self):
         """This function grabs coordinates for the initial point
         of the transect if there is one available GPS connection
         """
-        # First we get the connectionRegistry
 
+        # First we get the connectionRegistry
         connectionRegistry = QgsGPSConnectionRegistry().instance()
 
         # Now the connections list from that registry instance
-
         connectionList = connectionRegistry.connectionList()
               
         if connectionList:
-
+            
+            # Time for getting, extracting and transforming the GPS
+            # data and pass it to the clicktool to fake first click
+            # and continue with the transect definition
+            
             GPSInfo = connectionList[0].currentGPSInformation()
-
-            # And now, we extract the info we want 
-
+            
+            projectSrsEntry = QgsProject.instance()\
+                .readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+            projectSrs = QgsCoordinateReferenceSystem()
+            projectSrs.createFromProj4(projectSrsEntry[0])
+            wgs84 = QgsCoordinateReferenceSystem(4326)
+            transfromFromWgs84 = QgsCoordinateTransform(self.wgs84, projectSrs)
+    
             lon = GPSInfo.longitude
             lat = GPSInfo.latitude
-            self.dlg.ui.startLat.setValue(lat)
-            self.dlg.ui.startLon.setValue(lon)
+            mapPoint = QgsPoint(lon, lat)
+            
             self.firstSelectedPoint = True
             
-            # We get and store the point received from GPS
-            mapPoint=QgsPoint(lon, lat)
-            
             # We need to transform the point received from
-            #the GPS to canvas coordinates to pass it to the 
-            #clickTool in canvas coordinates.
+            # the GPS to canvas coordinates to pass it to the 
+            # clickTool. If we have automatic definition, the click
+            # tool will take care of them. If not, we just need to set
+            # the coordinates in the gui but in SRS coordinates, so
+            # we need to transform them
             
-            mapUnitsPerPixel = self.canvas.mapUnitsPerPixel()
-            transformer = QgsMapToPixel(mapUnitsPerPixel)
-            canvasPoint = transformer.transform(lon,lat)            
-            self.clickTool.setFirstPoint(mapPoint, canvasPoint)
-        
+            if self.autoTransect:
+                
+                mapUnitsPerPixel = self.canvas.mapUnitsPerPixel()
+                transformer = QgsMapToPixel(mapUnitsPerPixel)
+                canvasPoint = transformer.transform(lon, lat) 
+                # Finally we call the appropiate method of clickTool to
+                # set the initial point of the transect
+                self.clickTool.setFirstPoint(mapPoint, canvasPoint)
+                            
+            else:
+                
+                mapCoordinates = transfromFromWgs84.transform(mapPoint)
+                self.dlg.ui.startLat.setValue(mapCoordinates.y())
+                self.dlg.ui.startLon.setValue(mapCoordinates.x())
+            
         else:
             msg = QMessageBox()
-            msg.setText("<center>Sorry, no GPS connection available</center>")
+            msg.setText(self.tr("<center>Sorry, no GPS connection available</center>"))
             msg.exec_()
         
     def initGui(self):
         
         # Create action that will start plugin configuration
         self.action = QAction(
-            QIcon(":/plugins/transectizer/icon.png"),
-            u"transectizer", self.iface.mainWindow())
-        # connect the action to the run method
+            QIcon(":/icon.png"), u"Transectizer", self.iface.mainWindow())
+        # Connect the action to the run method
         self.action.triggered.connect(self.run)
     
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu(u"&Transectizer", self.action)
+        self.iface.addPluginToVectorMenu(u"&Transectizer", self.action)
         self.iface.digitizeToolBar().addAction(self.action)
+        
+        #Populate existing layers combobox iwth layer list
+        self.populateLayersCombo()
+        
+        # Creation of coordinate transform object from project SRS to WGS84
+        projectSrsEntry = QgsProject.instance().readEntry("SpatialRefSys",\
+            "/ProjectCRSProj4String")
+        projectSrs = QgsCoordinateReferenceSystem()
+        projectSrs.createFromProj4(projectSrsEntry[0])
+        self.wgs84 = QgsCoordinateReferenceSystem(4326)
+        self.transformToWgs84 = QgsCoordinateTransform(projectSrs, self.wgs84)
+        self.transfromFromWgs84 = QgsCoordinateTransform(self.wgs84, projectSrs)
+        
+        #Add dlg to dock area
+        self.iface.mainWindow().addDockWidget(Qt.RightDockWidgetArea, self.dlg)
         
 
     def unload(self):
         
         # Remove the plugin menu item and icon
+        self.dlg.close()
+        self.iface.mainWindow().removeDockWidget(self.dlg)
         self.iface.removePluginMenu(u"&Transectizer", self.action)
         self.iface.removeToolBarIcon(self.action)
+          
         
     def populateLayersCombo(self):
         """
@@ -273,6 +383,7 @@ class transectizer(QDialog):
                 #And now if it is of the point type
                 if layer.geometryType() == QGis.Point:
                     self.dlg.ui.layersCombo.addItem(layer.name())
+        
         # If after all we don't have any appropiate layer, we
         # disable the combo and check for new layer creation
         if self.dlg.ui.layersCombo.count() == 0:
@@ -285,6 +396,9 @@ class transectizer(QDialog):
         """
         This slot enables or disables the auto-naming of the created 
         stations depending on the state of autoNameCheck
+        Parameters:
+            isAutoNamingChecked: Boolean which states if Automatic
+            station info checkbox is checked or not
         """
         
         if not isAutoNamingChecked:
@@ -298,77 +412,77 @@ class transectizer(QDialog):
         """
         This slot enables or disables the automatic transect creation,
         connecting or disconnecting the clickTool.
+        Parameters:
+            isAutoTransectChecked: Boolean which states if Automatic
+            transect design checkbox is checked or not
         """
         # Manual transect creation
         if not isAutoTransectChecked:
             
             self.dlg.ui.startLat.setEnabled(True)
             self.dlg.ui.startLon.setEnabled(True)
-            self.dlg.ui.finalLat.setEnabled(True)
-            self.dlg.ui.finalLon.setEnabled(True)
             self.clickTool.iniPointSelected.disconnect(self.resetFirstPoint)
             self.clickTool.iniPointSelected.disconnect(self.resetSecondPoint)
             self.clickTool.endPointSelected.disconnect(self.resetSecondPoint)
-            self.clickTool.iniPointSelected.disconnect(self.updatePos)
-            self.clickTool.endPointSelected.disconnect(self.updatePos)
-            self.clickTool.movingCanvas.disconnect(self.calculateBearingFromPoints)
+            self.clickTool.iniPointSelected.disconnect(self.autoDefineTransect)
+            self.clickTool.endPointSelected.disconnect(self.autoDefineTransect)
+            self.clickTool.movingCanvas.disconnect(self.autoDefineTransect)
+            self.destroyMarkers()
             self.firstSelectedPoint = True
             self.secondSelectedPoint = True
+            self.canvas.unsetMapTool(self.clickTool)
+            self.autoTransect = False
             return
         # Automatic transect creation: 
         else:
+            
             self.dlg.ui.startLat.setEnabled(False)
             self.dlg.ui.startLon.setEnabled(False)
-            self.dlg.ui.finalLat.setEnabled(False)
-            self.dlg.ui.finalLon.setEnabled(False)
             self.clickTool.iniPointSelected.connect(self.resetFirstPoint)
             self.clickTool.iniPointSelected.connect(self.resetSecondPoint)
             self.clickTool.endPointSelected.connect(self.resetSecondPoint)
-            self.clickTool.iniPointSelected.connect(self.updatePos)
-            self.clickTool.endPointSelected.connect(self.updatePos)
-            self.clickTool.movingCanvas.connect(self.calculateBearingFromPoints)
+            self.createMarkers()
+            self.clickTool.iniPointSelected.connect(self.autoDefineTransect)
+            self.clickTool.endPointSelected.connect(self.autoDefineTransect)
+            self.clickTool.movingCanvas.connect(self.autoDefineTransect)
+            self.canvas.setMapTool(self.clickTool)
+            self.autoTransect = True
             return           
-        
+    
     def newTransect(self):
         """
         Draws and stores the points for the transect, making the
         appropiate checks for all to work properly.
         """
         
-        # Gets the distance between stations and checks if it's greater
-        # than zero.
-        dst =  self.dlg.ui.dstBtwnStations.value()
-        if dst == 0:
-
-            msg = QMessageBox()
-            msg.setText("<center>Please provide a distance between stations greater than 0 %s<center>"
-                %self.dlg.ui.unitsCombo.currentText().lower())
-            msg.exec_()
-            return
-
-        # Gets the number of stations to be deployed and check if it's
-        # greater than zero.
-        numberOfStations = self.dlg.ui.numberOfStations.value()
-        if numberOfStations == 0:
-
-            msg=QMessageBox()
-            msg.setText("<center>Please provide a number of stations greater than 0<center>")
-            msg.exec_()
-            return
-        
+        # Transformation between project SRS and WGS84
+        projectSrsEntry = QgsProject.instance().readEntry("SpatialRefSys",\
+            "/ProjectCRSProj4String")
+        projectSrs = QgsCoordinateReferenceSystem()
+        projectSrs.createFromProj4(projectSrsEntry[0])
+        wgs84 = QgsCoordinateReferenceSystem(4326)
+        transformToWgs84 = QgsCoordinateTransform(projectSrs, self.wgs84)
+        transfromFromWgs84 = QgsCoordinateTransform(self.wgs84, projectSrs)
+             
         # Gets the values for the main calculations:
         # Bearing, initial latitude, initial longitude
         # and creates a QgsPoint with them
         brg = self.dlg.ui.bearing.value()
         lat = self.dlg.ui.startLat.value()
         lon = self.dlg.ui.startLon.value()
-        startPoint = QgsPoint(lon,lat)
+        startPoint = QgsPoint(lon, lat)
         
-        # Gets the chosen measurment unit for the distance
-        # between stations and converts it to meters
+        # Gets the transect definition parameters
+        # and transforms the distance between stations
+        # to meters to perform calculations properly
         unit = self.dlg.ui.unitsCombo.currentIndex()
-        if unit == 1:
-            dst = dst * 1000.0 #Meters, no conversion at all
+        dst =  self.dlg.ui.dstBtwnStations.value()
+        numberOfStations = self.dlg.ui.numberOfStations.value()
+        
+        if unit == 0:
+            dst = dst  #Meters, no conversion at all
+        elif unit == 1:
+            dst = dst * 1000.0 #Kilometers    
         elif unit == 2:
             dst = dst * 0.3048 #Feet
         elif unit == 3: 
@@ -382,7 +496,16 @@ class transectizer(QDialog):
         if self.dlg.ui.outputToNew.isChecked():
             # If we want a new layer, let's create it with
             # the name provided in newLayerName lineEdit
-            layer = self.createTransectizerLayer(self.dlg.ui.newLayerName.text())
+            layerName = self.dlg.ui.newLayerName.text()
+            if len(layerName.strip(' ')) > 0:
+                layer = self.createTransectizerLayer(layerName)
+            else:
+                msg = QMessageBox()
+                msg.setText(self.tr("""<center>New layer name is
+                    empty.<br>Please provide one for the layer to be created</center>"""))
+                msg.exec_()
+                return
+                
         else:
             # Otherwise, we must check if the selected layer
             # is appropiate for working with Transectizer.
@@ -394,7 +517,7 @@ class transectizer(QDialog):
         # If after all we have a working layer, we start the station deployment
         if layer:
             
-            startPoint = self.transform.transform(startPoint)
+            startPoint = transformToWgs84.transform(startPoint)
             lat = startPoint.y()
             lon = startPoint.x()
             stations = []
@@ -403,7 +526,8 @@ class transectizer(QDialog):
             layer.startEditing()
             featureCount = int(layer.featureCount()) 
             layerFields = layer.dataProvider().fields()
-            # I instntiate the manual naming dialog even if
+            
+            # Here themanual naming dialog is instantiated even if
             # it is not checked. Maybe there is a better way,
             # just checking if there is already such a dialog
             # (See (***) ahead)
@@ -426,7 +550,7 @@ class transectizer(QDialog):
                     stationNumber = station + offset
                     stationObs = ""
                 else:
-                    # (***) Maybe this is the place to create them
+                    # (***) Maybe this is the place to create the
                     # manual naming dialog checking in the subsequent
                     # iterations for its existence, but don't know how
                     
@@ -454,6 +578,7 @@ class transectizer(QDialog):
                     stationName = mnNamesDialog.ui.stationText.text()
                     stationNumber = mnNamesDialog.ui.stnNumberText.value()
                     stationObs = mnNamesDialog.ui.observationsText.text()
+                    
                     # Manages station number sequencing
                     if mnNamesDialog.ui.autoNumberCheck.isChecked() == True:
                         mnNamesDialog.ui.stnNumberText.setValue(stationNumber + 1)
@@ -461,51 +586,45 @@ class transectizer(QDialog):
                         mnNamesDialog.ui.stnNumberText.setValue(stationNumber)
                         
                 #Creates the point for the calculation
-                point = QgsPoint(nlon,nlat)
+                point = QgsPoint(nlon, nlat)
                 
                 # Adding the new feature to the layer
                 feature = QgsFeature(layerFields)
                 feature.setGeometry(QgsGeometry.fromPoint(point))
                 
-                feature.setAttribute(layer.fieldNameIndex('id'), station + featureCount)
-                feature.setAttribute(layer.fieldNameIndex('survey'), transectSurvey)
-                feature.setAttribute(layer.fieldNameIndex('station'), stationName)
-                feature.setAttribute(layer.fieldNameIndex('stnnum'), stationNumber)
-                feature.setAttribute(layer.fieldNameIndex('stnlat'), point.y())
-                feature.setAttribute(layer.fieldNameIndex('stnlon'), point.x())
-                feature.setAttribute(layer.fieldNameIndex('stnobs'), stationObs)
+                feature.setAttribute(layer.fieldNameIndex('id'),\
+                    station + featureCount)
+                feature.setAttribute(layer.fieldNameIndex('survey'),\
+                    transectSurvey)
+                feature.setAttribute(layer.fieldNameIndex('station'),\
+                    stationName)
+                feature.setAttribute(layer.fieldNameIndex('stnnum'),\
+                    stationNumber)
+                feature.setAttribute(layer.fieldNameIndex('stnlat'),\
+                    point.y())
+                feature.setAttribute(layer.fieldNameIndex('stnlon'),\
+                    point.x())
+                feature.setAttribute(layer.fieldNameIndex('stnobs'),\
+                    stationObs)
 
                 layer.addFeature(feature, True)
                 # Now the departure point for the next iteration is calculated
-                nlat, nlon, nbrg = self.vinc_pt(1/298.257223563, 6378137.0,
-                                            lat, lon,brg,dst * (station + 1))
+                nlat, nlon, nbrg = self.vinc_pt(1/298.257223563, 6378137.0,\
+                    lat, lon,brg,dst * (station + 1))
+            
             # When all stations are deployed, changes ar commited
             # and canvas refresed
             layer.commitChanges()
             layer.triggerRepaint()
             
+            # We clean the canvas from markers and transect linededit
+            self.destroyMarkers()
+            
+            
     def run(self):
         
-        self.canvas.setMapTool(self.clickTool)
-        
-        #Populate existing layers combobox iwth layer list
-        self.populateLayersCombo()
-        
-        
-        #Show the dialog
         self.dlg.show()
-        
-        # Creation of coordinate transform object from project SRS to WGS84
-        projectSrsEntry = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
-        projectSrs = QgsCoordinateReferenceSystem()
-        projectSrs.createFromProj4(projectSrsEntry[0])
-        wgs84 = QgsCoordinateReferenceSystem(4326)
-        self.transform = QgsCoordinateTransform(projectSrs,wgs84)
-        
-        # Run the dialog event loop
-        self.dlg.exec_()
-        #After dialog is closed
-        self.canvas.unsetMapTool(self.clickTool)
+ 
     
     def createTransectizerLayer(self,newLayerName):
       """
@@ -518,7 +637,7 @@ class transectizer(QDialog):
       """
       
       self.transectizerLayer =  QgsVectorLayer(
-              "Point?crs=epsg:4326&field=id:integer&field=survey:string(20)&field=station:string(5)&field=stnnum:integer&field=stnlat:double&field=stnlon:double&field=stnobs:string(254)&index=yes",
+              "Point?crs=epsg:4326&field=id:integer&field=survey:string(20)&field=station:string(10)&field=stnnum:integer&field=stnlat:double&field=stnlon:double&field=stnobs:string(254)&index=yes",
               newLayerName,
               "memory")
       self.provider = self.transectizerLayer.dataProvider()
@@ -536,7 +655,7 @@ class transectizer(QDialog):
         Attributes:
         ===========
         survey(string, 20): A descripive name of survey/transect.
-        station:(string, 10): A descriptive name/prefix for the stations.
+        station:(string, 10): A short descriptive prefix/name for the stations.
         stnnum(int): Sequential/arbitrary number for the station.
         stnlat(double): Latitude, , in decimal degrees, for the station.
         stnlon(double): Longitude, in decimal degrees, for the station.
@@ -546,14 +665,21 @@ class transectizer(QDialog):
         """
         
         # Creating the list of fields to be compared
-        surveyField = QgsField(name = 'survey', type = 10, typeName = 'string', len = 20)
-        stationField = QgsField(name = 'station', type = 10, typeName = 'string', len = 5)
-        stnnumField = QgsField(name = 'stnnum', type =2 , typeName = 'integer', len = 10, prec = 0)
-        stnlatField = QgsField(name = 'stnlat', type = 6, typeName = 'double', len = 20, prec = 5)
-        stnlonField = QgsField(name = 'stnlon', type = 6, typeName = 'double', len = 20, prec = 5)
-        stnobsField = QgsField(name = 'stnobs', type = 10, typeName = 'string', len = 254)
+        surveyField = QgsField(name = 'survey', type = 10,\
+            typeName = 'string', len = 20)
+        stationField = QgsField(name = 'station', type = 10,\
+            typeName = 'string', len = 10)
+        stnnumField = QgsField(name = 'stnnum', type =2,\
+            typeName = 'integer', len = 10, prec = 0)
+        stnlatField = QgsField(name = 'stnlat', type = 6,\
+            typeName = 'double', len = 20, prec = 5)
+        stnlonField = QgsField(name = 'stnlon', type = 6,\
+            typeName = 'double', len = 20, prec = 5)
+        stnobsField = QgsField(name = 'stnobs', type = 10,\
+            typeName = 'string', len = 254)
         
-        fieldList = (surveyField, stationField, stnnumField, stnlatField, stnlonField, stnobsField)
+        fieldList = (surveyField, stationField, stnnumField,\
+            stnlatField, stnlonField, stnobsField)
         
         # Now we get the fields from the layer to be checked
         layerName = self.dlg.ui.layersCombo.currentText()
@@ -573,17 +699,17 @@ class transectizer(QDialog):
         # required fields), we just return it
         if layerOK:
             if selectedByCombo:
-                msg.setText("<center>%s is a valid layer<br>for Transectizer to work<center>" %layerName)
+                msg.setText(self.tr("<center>%s is a valid layer<br>for Transectizer to work<center>" %layerName))
                 msg.exec_()
             return layer
         # If not, we offer the user the chance
         # of creating them in the chosen layer
         else:
-            msg.setText("""<center>It looks like the selected layer<br>
+            msg.setText(self.tr("""<center>It looks like the selected layer<br>
                 has not the fields required for Transectizer to work.<br>
-                Do you want them to be added to your layer?<center>""")
-            btn1 = msg.addButton(u"Add and continue", QMessageBox.YesRole)
-            btn2 = msg.addButton(u"Cancel", QMessageBox.NoRole)
+                Do you want them to be added to your layer?<center>"""))
+            btn1 = msg.addButton(self.tr("Add and continue"), QMessageBox.YesRole)
+            btn2 = msg.addButton(self.tr("Cancel"), QMessageBox.NoRole)
             msg.exec_()
             # Creation of the new fields in the layer
             if msg.clickedButton() == btn1:
@@ -603,8 +729,16 @@ class transectizer(QDialog):
         Returns the lat and long of projected point and reverse azimuth 
         given a reference point and a distance and azimuth to project. 
         lats, longs and azimuths are passed in decimal degrees 
-        Returns ( phi2,  lambda2,  alpha21 ) as a tuple 
-        NOTE: This code has some license issues. It has been obtained 
+        Returns ( phi2,  lambda2,  alpha21 ) as a tuple
+        Parameters:
+        ===========
+            f: flattening of the ellipsoid
+            a: radius of the ellipsoid, meteres
+            phil: latitude of the start point, decimal degrees
+            lembda1: longitude of the start point, decimal degrees
+            alpha12: bearing, decimal degrees
+            s: Distance to endpoint, meters
+        NOTE: This code could have some license issues. It has been obtained 
         from a forum and its license is not clear. I'll reimplement with
         GPL3 as soon as possible.
         The code has been taken from
@@ -653,20 +787,25 @@ class transectizer(QDialog):
             last_sigma = sigma 
             sigma = (s / (b * A)) + delta_sigma 
             
-        phi2 = math.atan2 ( (math.sin(U1) * math.cos(sigma) + math.cos(U1) * math.sin(sigma) * math.cos(alpha12) ), \
+        phi2 = math.atan2 ( (math.sin(U1) * math.cos(sigma) +\
+            math.cos(U1) * math.sin(sigma) * math.cos(alpha12) ), \
             ((1-f) * math.sqrt( math.pow(Sinalpha, 2) +  \
-            pow(math.sin(U1) * math.sin(sigma) - math.cos(U1) * math.cos(sigma) * math.cos(alpha12), 2)))) 
+            pow(math.sin(U1) * math.sin(sigma) - math.cos(U1) * \
+            math.cos(sigma) * math.cos(alpha12), 2)))) 
             
-        lembda = math.atan2( (math.sin(sigma) * math.sin(alpha12 )), (math.cos(U1) * math.cos(sigma) -  \
-                math.sin(U1) *  math.sin(sigma) * math.cos(alpha12))) 
+        lembda = math.atan2( (math.sin(sigma) * math.sin(alpha12 )),\
+            (math.cos(U1) * math.cos(sigma) -  \
+            math.sin(U1) *  math.sin(sigma) * math.cos(alpha12))) 
             
         C = (f/16) * cosalpha_sq * (4 + f * (4 - 3 * cosalpha_sq )) 
         omega = lembda - (1-C) * f * Sinalpha *  \
             (sigma + C * math.sin(sigma) * (math.cos(two_sigma_m) + \
-            C * math.cos(sigma) * (-1 + 2 * math.pow(math.cos(two_sigma_m),2) ))) 
+            C * math.cos(sigma) * (-1 + 2 *\
+            math.pow(math.cos(two_sigma_m), 2) ))) 
 
         lembda2 = lembda1 + omega 
-        alpha21 = math.atan2 ( Sinalpha, (-math.sin(U1) * math.sin(sigma) +  \
+        alpha21 = math.atan2 ( Sinalpha, (-math.sin(U1) * \
+            math.sin(sigma) +
             math.cos(U1) * math.cos(sigma) * math.cos(alpha12))) 
 
         alpha21 = alpha21 + two_pi / 2.0 
@@ -675,10 +814,11 @@ class transectizer(QDialog):
         if ( alpha21 > two_pi ) : 
             alpha21 = alpha21 - two_pi 
 
-        phi2       = phi2       * 45.0 / piD4 
-        lembda2    = lembda2    * 45.0 / piD4 
-        alpha21    = alpha21    * 45.0 / piD4 
-        return phi2,  lembda2,  alpha21 
+        phi2 = phi2 * 45.0 / piD4 
+        lembda2 = lembda2 * 45.0 / piD4 
+        alpha21 = alpha21 * 45.0 / piD4 
+        
+        return phi2, lembda2, alpha21 
 
     def about(self):
         """
@@ -691,47 +831,89 @@ class clickTool(QgsMapToolEmitPoint):
     """
     This class provides a clicktool which, once selected a
     start point clicking on the canvas, draws a rubberband
-    showing a line until the mouse button is released.
-    
+    showing a line until the mouse button is released. It
+    also is capable of showing the bearing while editing
+    in QGIS mouse pointer
     """   
-    iniPointSelected = pyqtSignal(QgsPoint)
-    endPointSelected = pyqtSignal(QgsPoint)
-    movingCanvas = pyqtSignal(QgsPoint, QgsPoint)
+    iniPointSelected = pyqtSignal(QgsPoint, QgsPoint, float)
+    endPointSelected = pyqtSignal(QgsPoint, QgsPoint, float)
+    movingCanvas = pyqtSignal(QgsPoint, QgsPoint, float)
     
-    def __init__(self, canvas):
+    def __init__(self, canvas,iface):
         
-        # Initialzation of the tool
+        # Initialzation of the tool. We need to keep some references
+        # both to canvas and iface to work on cursors and statusbar
+        # later on
         self.canvas = canvas
+        self.iface = iface
         QgsMapToolEmitPoint.__init__(self, self.canvas)
-        self.rubberBand = QgsRubberBand(self.canvas, QGis.Line)
-        self.rubberBand.setColor(Qt.red)
-        self.rubberBand.setWidth(1)
+        
+        self.startPointCursor = QCursor(QPixmap(':/cursors/startCursor.png'))
+        self.endPointCursor = QCursor(QPixmap(':/cursors/dragCursor.png'))
+        
+        self.normalCursor = QCursor(0)
+        self.prevMapTool = None
         self.alreadyStarted = False
+        self.clickToFinish = False
+        self.tabChange = False
         self.reset()
-
+        self.cursor = QCursor()
+        
+        self.msgBar = self.iface.messageBar()
+  
+    
+    def calculateBearing(self, startPoint, endPoint):
+        """
+        Calculates the bearing between two points. This calculation
+        needs the points to have its coordinates in degrees
+        """
+        startLat = math.radians(startPoint.y())
+        startLon = math.radians(startPoint.x())
+        endLat = math.radians(endPoint.y())
+        endLon = math.radians(endPoint.x())
+            
+        deltaLon = endLon - startLon
+        y = math.sin(deltaLon) * math.cos(endLat)
+        x = math.cos(startLat) * math.sin(endLat) - math.sin(startLat) *\
+            math.cos(endLat) * math.cos(deltaLon)
+        bearing = (5 * math.pi / 2) - math.atan2(x, y)
+        bearing = round( math.degrees(bearing), 1) % 360
+        return bearing
+        
     def reset(self):
+        
         # Resets the tool
         self.startPoint = self.endPoint = None
         self.isEmittingPoint = False
-        self.rubberBand.reset()
+        self.clickToFinish = False
+        self.alreadyStarted = False
         
+        
+    def activate(self):
+        
+        self.parent().setCursor(self.startPointCursor)
+        msg = self.msgBar.createMessage(\
+            self.tr("<b>TRANSECTIZER:</b> Click canvas to set first point, drag mouse to set bearing"))
+        self.msgBar.pushWidget(msg, QgsMessageBar.INFO, 0)
+              
     def deactivate(self):
         
-        self.rubberBand.reset()
+        self.msgBar.clearWidgets()
+                
     
     def setFirstPoint(self,mapPoint,canvasPoint):
-    #def setFirstPoint(self,canvasPoint):
         """
-        This functions makes possible to programatically pass a point as
+        This function makes possible to programatically pass a point as
         initial point, simulating a MouseEvent
         """
         
+        self.reset()
         self.alreadyStarted = True
-        self.startPoint = mapPoint
-        cvPoint = QPoint(canvasPoint.x(),canvasPoint.y())
-        simuClick = QMouseEvent(QEvent.MouseButtonPress,cvPoint,
-            Qt.LeftButton,Qt.LeftButton,Qt.NoModifier,)
+        self.passedPoint = mapPoint
         
+        cvPoint = QPoint(canvasPoint.x(), canvasPoint.y())
+        simuClick = QMouseEvent(QEvent.MouseButtonPress, cvPoint,\
+            Qt.LeftButton, Qt.LeftButton, Qt.NoModifier,)
         self.canvasPressEvent(simuClick)
     
     def canvasPressEvent(self, e):
@@ -740,41 +922,146 @@ class clickTool(QgsMapToolEmitPoint):
         the rubberband initialized. The signal iniPointSelected
         is emitted and isEmittingPoint is set to True, so the tool
         starts to draw the rubberband. If self.alreadyStarted is set
-        to True, means that the first point has been set by other means
+        to True, means that the first point has been set by other ,
+        so the wignal will not be emmited
         """
         
-        #self.reset()
-        if not self.alreadyStarted:
+        if not self.alreadyStarted: # Means that we have a true click
+            
+            # Reset the clickTool and set the cursor
             self.reset()
-            self.startPoint = self.toMapCoordinates(e.pos())
+            self.parent().setCursor(self.endPointCursor)
             
-        else:
-            self.isEmittingPoint = False
+            # Some messaging to guide the user
+            self.msgBar.clearWidgets()
+            msg = self.msgBar.createMessage(self.tr("<b>TRANSECTIZER:</b> Check bearing with cursor, release button when done"))
+            self.msgBar.pushWidget(msg, QgsMessageBar.WARNING, 0)
             
+            # We get the canvas position and we transform it to WGS84
+            start = self.toMapCoordinates(e.pos())
+            projectSrsEntry = QgsProject.instance().readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+            projectSrs = QgsCoordinateReferenceSystem()
+            projectSrs.createFromProj4(projectSrsEntry[0])
+            wgs84 = QgsCoordinateReferenceSystem(4326)
+            transformToWgs84 = QgsCoordinateTransform(projectSrs,wgs84)
+            self.startPoint = transformToWgs84.transform(start)
+            
+        else: # We've recived the position programatically
+            
+            # Some messaging to guide the user
+            self.msgBar.clearWidgets()
+            msg = self.msgBar.createMessage(\
+                self.tr("<b>TRANSECTIZER:</b> Check bearing with cursor, left click when done"))
+            self.msgBar.pushWidget(msg, QgsMessageBar.WARNING, 0)
+            
+            # Our start point is the point passed 
+            # to clicktool when setFirstPoint was called
+            self.startPoint = self.passedPoint
+            
+            # If we got the points programatically, it means that 
+            # we finish the transect definition clicking on the canvas
+            # rather than releasing the button, so we won't emit the
+            # point in this case: time to return!!
+            if self.clickToFinish:
+                self.parent().setCursor(self.startPointCursor)
+                self.alreadyStarted = False
+                return
+        
+            self.clickToFinish = True
+        
         self.endPoint = self.startPoint
-        self.rubberBand.reset()
-        self.rubberBand.addPoint(self.startPoint)
-        self.rubberBand.addPoint(self.endPoint)
         self.isEmittingPoint = True
-        self.iniPointSelected.emit(self.startPoint)
+        self.iniPointSelected.emit(self.startPoint, self.endPoint,0)
+        return
 
     def canvasReleaseEvent(self, e):
-        
         """
         When the user releases the button,the signal endPointSelected
         is emitted and self.isEmittingPoint is set to True. Also, sets
         alreadyStarted to false.
         """
-        self.isEmittingPoint = False
-        self.alreadyStarted = False
-        self.endPointSelected.emit(self.toMapCoordinates(e.pos()))
+        
+        if not self.alreadyStarted:
+            self.parent().setCursor(self.startPointCursor)
+            self.msgBar.clearWidgets()
+            msg = self.msgBar.createMessage(\
+                self.tr("<b>TRANSECTIZER:</b> Click canvas to set first point, drag mouse to set bearing"))
+            self.msgBar.pushWidget(msg, QgsMessageBar.INFO, 0)
+            self.isEmittingPoint = False
+            end = self.toMapCoordinates(e.pos())
+            projectSrsEntry = QgsProject.instance()\
+                .readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+            projectSrs = QgsCoordinateReferenceSystem()
+            projectSrs.createFromProj4(projectSrsEntry[0])
+        
+            wgs84 = QgsCoordinateReferenceSystem(4326)
+            transformToWgs84 = QgsCoordinateTransform(projectSrs, wgs84)
+            endPoint = transformToWgs84.transform(end)
+            bearing = self.calculateBearing(self.startPoint, endPoint)
+            self.endPointSelected.emit(self.startPoint, endPoint, bearing)
+            
+        else:
+            
+            self.clickToFinish = True
+            return
         
     def canvasMoveEvent(self, e):
         """
         When isEmittingPoint is True (set by canvasPressEvent),
         the signal movingCanvas is emitted with the initial and end
         point of the rubberband and also the rubberBand is updated.
+        The bearing of the rubberband is calculated and shown in
+        the cursor.
         """
         if self.isEmittingPoint:
-            self.rubberBand.movePoint(self.toMapCoordinates(e.pos()))
-            self.movingCanvas.emit(self.startPoint,self.toMapCoordinates(e.pos()))
+                       
+            # Bearing calculation: The bearing is obtained 
+            # in azimuth and radians and must be
+            # transformed to degrees and bearing
+            # TODO: Change cursor size depending on
+            # screen resolution and/or system
+            
+            endPoint = self.toMapCoordinates(e.pos())
+            
+            projectSrsEntry = QgsProject.instance().\
+                readEntry("SpatialRefSys", "/ProjectCRSProj4String")
+            projectSrs = QgsCoordinateReferenceSystem()
+            projectSrs.createFromProj4(projectSrsEntry[0])
+            wgs84 = QgsCoordinateReferenceSystem(4326)
+            transformToWgs84 = QgsCoordinateTransform(projectSrs, wgs84)
+            transfromFromWgs84 = QgsCoordinateTransform(wgs84, projectSrs)
+            
+            start = self.startPoint
+            end = transformToWgs84.transform(endPoint)
+            bearing = self.calculateBearing(start, end)
+            
+            # Fancy cursor with bearing drawn over it
+            # First a simple crosshair pixmap is loaded and a 
+            # QPainter object is created over it, so drawing 
+            # the bearing text over the pixmap is possible
+            
+            # First we load the pixmap
+            self.cursorPix = QPixmap(":/cursors/cursorBRG.png")
+            
+            #We create the painter
+            cursorPainter = QPainter(self.cursorPix)
+            
+            #Now we draw the texts over the pixmap
+            
+            font = QFont()
+            font.setPixelSize(8)
+            cursorPainter.setFont(font)
+            
+            cursorPainter.drawText(0, 0, 32, 32, Qt.AlignHCenter, str('BRG'))
+            font.setPixelSize(10)
+            cursorPainter.setFont(font)
+            cursorPainter.drawText(0, 22, 32, 32, Qt.AlignHCenter,\
+                str('%.1f' %bearing))
+            
+            # And finally, we assign our pixmap to the tool's parent
+            # (the underlying canvas) cursor
+            
+            self.cursor = QCursor(self.cursorPix)
+            self.parent().setCursor(self.cursor)
+            self.movingCanvas.emit(start, end, bearing)
+            

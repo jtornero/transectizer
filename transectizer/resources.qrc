@@ -1,13 +1,22 @@
 <RCC>
-  <qresource prefix="/plugins/transectizer">
+  <qresource prefix="/">
     <file>icon.png</file>
   </qresource>
-  <qresource prefix="/plugins/transectizer/help/html">
-    <file>help/html/choosing_layer.png</file>
+  <qresource prefix="/help/html">
     <file>help/html/help_en.html</file>
     <file>help/html/help_es.html</file>
     <file>help/html/manual_naming.png</file>
+    <file>help/html/choosing_layer.png</file>
     <file>help/html/station_details.png</file>
     <file>help/html/transect_definition.png</file>
+    <file>help/html/choosing_layer_es.png</file>
+    <file>help/html/manual_naming_es.png</file>
+    <file>help/html/station_details_es.png</file>
+    <file>help/html/transect_definition_es.png</file>
+</qresource>
+  <qresource prefix="/">
+    <file>cursors/cursorBRG.png</file>
+    <file>cursors/dragCursor.png</file>
+    <file>cursors/startCursor.png</file>
   </qresource>
 </RCC>

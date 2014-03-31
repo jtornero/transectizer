@@ -1,958 +1,766 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>transectizer</class>
- <widget class="QDialog" name="transectizer">
-  <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
-  </property>
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
+ <widget class="QDockWidget" name="transectizer">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>273</width>
-    <height>603</height>
+    <width>215</width>
+    <height>448</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="maximumSize">
+  <property name="minimumSize">
    <size>
-    <width>273</width>
-    <height>603</height>
+    <width>215</width>
+    <height>216</height>
    </size>
   </property>
-  <property name="font">
-   <font>
-    <pointsize>8</pointsize>
-   </font>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
-  <property name="windowTitle">
-   <string>Transectizer</string>
+  <property name="whatsThis">
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transectizer Plugin Main Dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
-  <property name="modal">
-   <bool>true</bool>
+  <property name="allowedAreas">
+   <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
   </property>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>410</y>
-     <width>271</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedStates"/>
-   </property>
-   <property name="title">
-    <string>Stations details</string>
-   </property>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>257</width>
-      <height>109</height>
-     </rect>
-    </property>
-    <property name="locale">
-     <locale language="English" country="UnitedStates"/>
-    </property>
-    <layout class="QGridLayout" name="namingLayout">
-     <item row="2" column="0">
-      <widget class="QLineEdit" name="surveyName">
-       <property name="acceptDrops">
-        <bool>false</bool>
+  <property name="windowTitle">
+   <string>Transectizer</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="0">
+     <widget class="QDialogButtonBox" name="buttonBox">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="standardButtons">
+       <set>QDialogButtonBox::Close|QDialogButtonBox::Help</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QToolBox" name="toolBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>205</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="page">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>195</width>
+         <height>304</height>
+        </rect>
        </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the value for the field &lt;span style=&quot; font-style:italic;&quot;&gt;survey&lt;/span&gt; of your transectizer layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>MySurvey</string>
-       </property>
-       <property name="maxLength">
-        <number>20</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="stnPreLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Station Prefix</string>
-       </property>
-       <property name="buddy">
-        <cstring>stationPrefix</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="iniNumLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Initial Station Number</string>
-       </property>
-       <property name="buddy">
-        <cstring>initialStationNumber</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLineEdit" name="stationPrefix">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the value for the field &lt;span style=&quot; font-style:italic;&quot;&gt;station&lt;/span&gt; of your transectizer layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>St</string>
-       </property>
-       <property name="maxLength">
-        <number>5</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QCheckBox" name="autoNameCheck">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With Automatic Station Details,&lt;/span&gt; Transectizer will fill up the fields describing the stations for you with the parameters below. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Without Automatic Station Details,&lt;/span&gt; you will be prompted for survey name, station prefix, station number and observations &lt;span style=&quot; font-style:italic; text-decoration: underline;&quot;&gt;for each deployed station.&lt;/span&gt; Bear in mind that, in case of a high number of stations, it can be tedious.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Automatic Station details</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="initialStationNumber">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here an &lt;span style=&quot; font-style:italic;&quot;&gt;offset for the station number&lt;/span&gt; of your layer, in case you don't want it to start from one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="accelerated">
-        <bool>true</bool>
-       </property>
-       <property name="value">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QLabel" name="srvNameLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Survey/Transect Name</string>
-       </property>
-       <property name="buddy">
-        <cstring>surveyName</cstring>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QPushButton" name="newTransectButton">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>140</y>
-      <width>211</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Press this button to for Transectizer do do its work,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="locale">
-     <locale language="English" country="UnitedStates"/>
-    </property>
-    <property name="text">
-     <string>Create new transect</string>
-    </property>
-    <property name="autoDefault">
-     <bool>false</bool>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_2">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>130</y>
-     <width>271</width>
-     <height>280</height>
-    </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedStates"/>
-   </property>
-   <property name="title">
-    <string>Transect definition</string>
-   </property>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>170</y>
-      <width>250</width>
-      <height>102</height>
-     </rect>
-    </property>
-    <property name="locale">
-     <locale language="English" country="UnitedStates"/>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="2" column="1">
-      <widget class="QComboBox" name="unitsCombo">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the measurement units for the distance between stations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 8pt &quot;Sans Serif&quot;;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-       <property name="frame">
-        <bool>true</bool>
-       </property>
-       <item>
-        <property name="text">
-         <string>Meters</string>
+       <attribute name="label">
+        <string>1. Set output layer</string>
+       </attribute>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>2</x>
+          <y>11</y>
+          <width>185</width>
+          <height>100</height>
+         </rect>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Kilometers</string>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0" colspan="2">
+          <widget class="QRadioButton" name="outputToExisting">
+           <property name="focusPolicy">
+            <enum>Qt::TabFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select this option to choose an existing layer from the combobox below. Transectizer will check if the selected layer has all the attributes for Transectizer to work. If not, you will be asked for Transectizer to add those fields to your layer. You can find details about this in the help.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Current project layer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QComboBox" name="layersCombo">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QRadioButton" name="outputToNew">
+           <property name="focusPolicy">
+            <enum>Qt::TabFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select this option to create a new&lt;span style=&quot; font-weight:600;&quot;&gt; memory layer&lt;/span&gt;. The new layer will be created with WGS84 (EPSG 4326) as CRS.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;Don't forget to save it before closing your project!!!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>New layer (must save later)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Layer name</string>
+           </property>
+           <property name="buddy">
+            <cstring>newLayerName</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="newLayerName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>MyLayer</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>195</width>
+         <height>304</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>2. Define transect</string>
+       </attribute>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>6</x>
+          <y>1</y>
+          <width>180</width>
+          <height>294</height>
+         </rect>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Feet</string>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0" colspan="4">
+          <widget class="QCheckBox" name="autoTransectCheck">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With automatic transect definition,&lt;/span&gt; the transect is defined with the help of the mouse.&lt;span style=&quot; font-weight:600; color:#00ff00;&quot;&gt;Please pay attention to QGIS status bar, which will guide you through the process.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;To define the transect, click over the canvas to define the initial point and don't release the mouse button. A rubberband is drawn, which helps you to define the bearing of your transect . Without releasing the button, move the mouse pointer to a second place in the canvas to set the bearing of your transect. Then, release the button and your transect will be defined.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;The mouse cursor will help you to set the bearing showing the bearing of the transect while dragging the mouse.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With manual transect definition&lt;/span&gt;, you must set/type in the spin boxes below the initial point of your transect and its bearing, &lt;span style=&quot; font-weight:600; font-style:italic; color:#ff0000;&quot;&gt;You must provide the coordinates in your&lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic; text-decoration: underline; color:#ff0000;&quot;&gt; Project&lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic; color:#ff0000;&quot;&gt; CRS.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic; color:#00ff00;&quot;&gt;In both cases, you can press the GPS button to get the coordinates for the initial point of your transect from an available GPS connection.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Automatic definition</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>X/Longitude</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="buddy">
+            <cstring>startLon</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QDoubleSpinBox" name="startLon">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the X coordinate/longitude of the initial point of your transect. &lt;span style=&quot; font-weight:600;&quot;&gt;Remember to provide it in the same CRS than your project.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>6</number>
+           </property>
+           <property name="minimum">
+            <double>-9999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>9999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2" colspan="2">
+          <widget class="QDoubleSpinBox" name="startLat">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the Y coordinate/latitude of the initial point of your transect. &lt;span style=&quot; font-weight:600;&quot;&gt;Remember to provide it in the same CRS than your project.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="keyboardTracking">
+            <bool>true</bool>
+           </property>
+           <property name="decimals">
+            <number>6</number>
+           </property>
+           <property name="minimum">
+            <double>-9999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>9999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" colspan="2">
+          <widget class="QPushButton" name="GPSButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Press this button to get the coordinates for the initial point of your transect. &lt;/span&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;A GPS connection must be available.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;With &lt;span style=&quot; font-weight:600;&quot;&gt;Automatic transect definition enabled, &lt;/span&gt;you can define the bearing of your transect by clicking on the canvas. Pay attention to QGIS status bar as well as to the mouse pointer, which shows the bearing of the current transect being defined.&lt;/p&gt;&lt;p&gt;With &lt;span style=&quot; font-weight:600;&quot;&gt;Automatic transect definition disabled,&lt;/span&gt; you still have to provide the bearing of your transect by typing/setting the spinbox below. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Get from
+GPS</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="4">
+          <widget class="QSpinBox" name="numberOfStations">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Type/set here the number of stations to be deployed&lt;/span&gt; along the transect. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>999</number>
+           </property>
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="4">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Distance between stations</string>
+           </property>
+           <property name="buddy">
+            <cstring>dstBtwnStations</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0" colspan="4">
+          <widget class="QDoubleSpinBox" name="dstBtwnStations">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Type/set here the distance between stations &lt;/span&gt;in the units selected below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>4</number>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="4">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Distance units</string>
+           </property>
+           <property name="buddy">
+            <cstring>unitsCombo</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0" colspan="4">
+          <widget class="QComboBox" name="unitsCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select the measurement units&lt;/span&gt; for the distance between stations. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <item>
+            <property name="text">
+             <string>Meters</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Kilometers</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Feet</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Yards</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Miles</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Nautical miles</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="4">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Transect bearing</string>
+           </property>
+           <property name="buddy">
+            <cstring>bearing</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="4">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Start Point</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0" colspan="4">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Number of stations</string>
+           </property>
+           <property name="buddy">
+            <cstring>numberOfStations</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="4">
+          <widget class="QDoubleSpinBox" name="bearing">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Type/set here the bearing of the transect&lt;/span&gt; in degrees.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="correctionMode">
+            <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <double>359.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>47</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="0">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>37</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="2" colspan="2">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Y/Latitude</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="buddy">
+            <cstring>startLat</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>100</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>3. Station info &amp;&amp; GO!!</string>
+       </attribute>
+       <widget class="QPushButton" name="newTransectButton">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>180</y>
+          <width>91</width>
+          <height>41</height>
+         </rect>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Yards</string>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Press this button to deploy the transect you have defined. You can create as many transects as you wish in the layer selected in the first tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
-       </item>
-       <item>
         <property name="text">
-         <string>Miles</string>
+         <string>Create
+new transect</string>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Nautical miles</string>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>10</y>
+          <width>180</width>
+          <height>152</height>
+         </rect>
         </property>
-       </item>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="autoNameCheck">
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With Automatic Station Details,&lt;/span&gt; Transectizer will fill up the fields describing the stations for you with the parameters below. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Without Automatic Station Details,&lt;/span&gt; you will be prompted for survey name, station prefix, station number and observations &lt;span style=&quot; font-style:italic; text-decoration: underline;&quot;&gt;for each deployed station.&lt;/span&gt; Bear in mind that, in case of a high number of stations, it can be tedious. However, you can fix the parameters for easy completion if you want to.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Automatic details</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Survey name</string>
+           </property>
+           <property name="buddy">
+            <cstring>stationPrefix</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLineEdit" name="stationPrefix">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the value for the field &lt;span style=&quot; font-style:italic;&quot;&gt;survey&lt;/span&gt; of your transectizer layer, up to 20 characters are allowed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>MySurvey</string>
+           </property>
+           <property name="maxLength">
+            <number>20</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Station prefix</string>
+           </property>
+           <property name="buddy">
+            <cstring>surveyName</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLineEdit" name="surveyName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the value for the field &lt;span style=&quot; font-style:italic;&quot;&gt;station&lt;/span&gt; of your transectizer layer. Up to 10 characters are allowed.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>St</string>
+           </property>
+           <property name="maxLength">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Initial station number</string>
+           </property>
+           <property name="buddy">
+            <cstring>initialStationNumber</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QSpinBox" name="initialStationNumber">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here an &lt;span style=&quot; font-style:italic;&quot;&gt;offset for the station number&lt;/span&gt; of your layer, in case you don't want it to start from one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>99999</number>
+           </property>
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="dstBtwnStLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Station distance</string>
-       </property>
-       <property name="buddy">
-        <cstring>dstBtwnStations</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="dstBtwnStLabel_2">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Distance units</string>
-       </property>
-       <property name="buddy">
-        <cstring>unitsCombo</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="numberOfStationsLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Number of stations</string>
-       </property>
-       <property name="buddy">
-        <cstring>numberOfStations</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="bearingLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Bearing (degrees)</string>
-       </property>
-       <property name="buddy">
-        <cstring>bearing</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="numberOfStations">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the number of stations to be deployed along the transect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>999</number>
-       </property>
-       <property name="value">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="dstBtwnStations">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the distance between stations in the units selected below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="inputMethodHints">
-        <set>Qt::ImhFormattedNumbersOnly</set>
-       </property>
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>999999.989999999990687</double>
-       </property>
-       <property name="value">
-        <double>1.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="bearing">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the bearing of the transect in degrees.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="maximum">
-        <number>359</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>50</y>
-      <width>226</width>
-      <height>111</height>
-     </rect>
-    </property>
-    <property name="locale">
-     <locale language="English" country="UnitedStates"/>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QLabel" name="startLonLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Initial longitude</string>
-       </property>
-       <property name="buddy">
-        <cstring>startLon</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="finalLonLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Final longitude</string>
-       </property>
-       <property name="buddy">
-        <cstring>finalLon</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="StartLatLAbel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Initial latitude</string>
-       </property>
-       <property name="buddy">
-        <cstring>startLat</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="finalLatLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Final latitude</string>
-       </property>
-       <property name="buddy">
-        <cstring>finalLat</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QDoubleSpinBox" name="startLat">
-       <property name="mouseTracking">
-        <bool>false</bool>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the latitude of the initial point of the transect. &lt;span style=&quot; font-weight:600;&quot;&gt;Remember to provide it in the same CRS than your project.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="keyboardTracking">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>6</number>
-       </property>
-       <property name="minimum">
-        <double>-99999999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>99999999.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="startLon">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the longitude of the initial point of the transect. &lt;span style=&quot; font-weight:600;&quot;&gt;Remember to provide it in the same CRS than your project.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="keyboardTracking">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>6</number>
-       </property>
-       <property name="minimum">
-        <double>-99999999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>99999999.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QDoubleSpinBox" name="finalLat">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the latitude of the final point of a line defining the transect. &lt;span style=&quot; font-weight:600;&quot;&gt;Remember to provide it in the same CRS than your project.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="keyboardTracking">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>6</number>
-       </property>
-       <property name="minimum">
-        <double>-99999999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>99999999.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="finalLon">
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the longitude of the final point of a line defining the transect. r&lt;span style=&quot; font-weight:600;&quot;&gt;emember to provide it in the same CRS than your project.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="keyboardTracking">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>6</number>
-       </property>
-       <property name="minimum">
-        <double>-99999999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>99999999.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QCheckBox" name="autoTransectCheck">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>27</y>
-      <width>175</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With automatic transect definition,&lt;/span&gt; you can press left mouse button, drag and release left button on the canvas to define the initial point and bearing of your transect.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With manual transect definition&lt;/span&gt;, you must provide at least the initial point of your transect and its bearing, or both initial and ending points defining the transect line to get the bearing calculated for you. &lt;span style=&quot; font-weight:600; font-style:italic; color:#ff0000;&quot;&gt;You must provide the coordinates in your&lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic; text-decoration: underline; color:#ff0000;&quot;&gt; Project&lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic; color:#ff0000;&quot;&gt; CRS.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="locale">
-     <locale language="English" country="UnitedStates"/>
-    </property>
-    <property name="text">
-     <string>Automatic (pick from map)</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="GPSButton">
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>20</y>
-      <width>40</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>GPS</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_3">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>271</width>
-     <height>141</height>
-    </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedStates"/>
-   </property>
-   <property name="title">
-    <string>Destination layer</string>
-   </property>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>251</width>
-      <height>100</height>
-     </rect>
-    </property>
-    <property name="locale">
-     <locale language="English" country="UnitedStates"/>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0" colspan="2">
-      <widget class="QRadioButton" name="outputToExisting">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select this option to choose an existing layer from the combobox below. Transectizer will check if the selected layer has all the attributes for transectizer to work. You can find details about this in the help.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Choose an existing layer</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QRadioButton" name="outputToNew">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select this option to create a new memory layer. The new layer will be created with WGS84 (EPSG 4326) as CRS.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;Don't forget to save it before closing your project!!!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Create new (must save later)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="newLayerLabel">
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>Layer name</string>
-       </property>
-       <property name="buddy">
-        <cstring>newLayerName</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="newLayerName">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type here the name of your new layer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>MyTransect</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QComboBox" name="layersCombo">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QPushButton" name="doneButton">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>580</y>
-     <width>99</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedStates"/>
-   </property>
-   <property name="text">
-    <string>Done</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="aboutButton">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>580</y>
-     <width>99</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="locale">
-    <locale language="English" country="UnitedStates"/>
-   </property>
-   <property name="text">
-    <string>About/Help</string>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <tabstops>
-  <tabstop>startLat</tabstop>
-  <tabstop>startLon</tabstop>
-  <tabstop>finalLat</tabstop>
-  <tabstop>finalLon</tabstop>
-  <tabstop>bearing</tabstop>
-  <tabstop>dstBtwnStations</tabstop>
-  <tabstop>unitsCombo</tabstop>
-  <tabstop>numberOfStations</tabstop>
-  <tabstop>autoNameCheck</tabstop>
-  <tabstop>surveyName</tabstop>
-  <tabstop>stationPrefix</tabstop>
-  <tabstop>initialStationNumber</tabstop>
-  <tabstop>newTransectButton</tabstop>
-  <tabstop>doneButton</tabstop>
-  <tabstop>newLayerName</tabstop>
-  <tabstop>layersCombo</tabstop>
   <tabstop>outputToExisting</tabstop>
   <tabstop>outputToNew</tabstop>
-  <tabstop>autoTransectCheck</tabstop>
+  <tabstop>newLayerName</tabstop>
+  <tabstop>startLon</tabstop>
+  <tabstop>startLat</tabstop>
+  <tabstop>bearing</tabstop>
+  <tabstop>numberOfStations</tabstop>
+  <tabstop>dstBtwnStations</tabstop>
+  <tabstop>unitsCombo</tabstop>
+  <tabstop>autoNameCheck</tabstop>
+  <tabstop>stationPrefix</tabstop>
+  <tabstop>surveyName</tabstop>
+  <tabstop>initialStationNumber</tabstop>
+  <tabstop>newTransectButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
-   <sender>doneButton</sender>
-   <signal>clicked()</signal>
-   <receiver>transectizer</receiver>
-   <slot>accept()</slot>
+   <sender>outputToNew</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>newLayerName</receiver>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>144</x>
-     <y>599</y>
+     <x>79</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
-     <x>275</x>
-     <y>587</y>
+     <x>158</x>
+     <y>135</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>startLat</sender>
-   <signal>editingFinished()</signal>
-   <receiver>startLon</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>125</x>
-     <y>189</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>120</x>
-     <y>222</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>startLon</sender>
-   <signal>editingFinished()</signal>
-   <receiver>finalLat</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>208</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>208</x>
-     <y>246</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>finalLat</sender>
-   <signal>editingFinished()</signal>
-   <receiver>finalLon</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>157</x>
-     <y>244</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>156</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>finalLon</sender>
-   <signal>editingFinished()</signal>
-   <receiver>dstBtwnStations</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>183</x>
-     <y>276</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>339</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dstBtwnStations</sender>
-   <signal>editingFinished()</signal>
-   <receiver>unitsCombo</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>219</x>
-     <y>346</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>218</x>
-     <y>367</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>bearing</sender>
-   <signal>editingFinished()</signal>
-   <receiver>dstBtwnStations</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>193</x>
-     <y>311</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>197</x>
-     <y>340</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>surveyName</sender>
-   <signal>returnPressed()</signal>
+   <sender>autoNameCheck</sender>
+   <signal>toggled(bool)</signal>
    <receiver>stationPrefix</receiver>
-   <slot>setFocus()</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>97</x>
-     <y>499</y>
+     <x>40</x>
+     <y>57</y>
     </hint>
     <hint type="destinationlabel">
-     <x>105</x>
-     <y>538</y>
+     <x>44</x>
+     <y>100</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>stationPrefix</sender>
-   <signal>returnPressed()</signal>
-   <receiver>initialStationNumber</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>121</x>
-     <y>539</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>172</x>
-     <y>538</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>initialStationNumber</sender>
-   <signal>editingFinished()</signal>
-   <receiver>newTransectButton</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>226</x>
-     <y>537</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>214</x>
-     <y>559</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>numberOfStations</sender>
-   <signal>editingFinished()</signal>
+   <sender>autoNameCheck</sender>
+   <signal>toggled(bool)</signal>
    <receiver>surveyName</receiver>
-   <slot>setFocus()</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>393</y>
+     <x>24</x>
+     <y>57</y>
     </hint>
     <hint type="destinationlabel">
-     <x>121</x>
-     <y>491</y>
+     <x>66</x>
+     <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>autoNameCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>initialStationNumber</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>69</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>71</x>
+     <y>186</y>
     </hint>
    </hints>
   </connection>

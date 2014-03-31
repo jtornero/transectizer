@@ -19,27 +19,29 @@
         <translation>Nombre del transecto</translation>
     </message>
     <message>
-        <location filename="ui_manualStationNaming.ui" line="112"/>
+        <location filename="ui_manualStationNaming.ui" line="65"/>
+        <location filename="ui_manualStationNaming.ui" line="89"/>
+        <location filename="ui_manualStationNaming.ui" line="123"/>
         <source>Fix</source>
         <translation>Fijar</translation>
     </message>
     <message>
-        <location filename="ui_manualStationNaming.ui" line="68"/>
+        <location filename="ui_manualStationNaming.ui" line="72"/>
         <source>Station prefix</source>
         <translation>Prefijo de Estación</translation>
     </message>
     <message>
-        <location filename="ui_manualStationNaming.ui" line="88"/>
+        <location filename="ui_manualStationNaming.ui" line="96"/>
         <source>Station Number</source>
         <translation>Número de Estación</translation>
     </message>
     <message>
-        <location filename="ui_manualStationNaming.ui" line="95"/>
+        <location filename="ui_manualStationNaming.ui" line="103"/>
         <source>Observations</source>
         <translation>Observaciones</translation>
     </message>
     <message>
-        <location filename="ui_manualStationNaming.ui" line="135"/>
+        <location filename="ui_manualStationNaming.ui" line="146"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
