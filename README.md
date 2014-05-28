@@ -44,6 +44,19 @@ Of course, no donations or fees are required for Transectizer to work... but if 
 
 Additionally, if you really feel in the mood of rewarding me, just send me a postcard from where you live. I'll be proud of showing it to my kid. Feel free of contact me through jtorlistas//at//gmail.com
 
+Citation
+========
+If you make use of Transectizer in a scientific research work, feel free to cite it as:
+
+    Jorge Tornero (2014). Transectizer, a QGIS plugin for linear transect design.
+    ZENODO. doi:10.5281/zenodo.10199
+
+
+![Alt text](https://zenodo.org/badge/doi/10.5281/zenodo.10199.png "DOI Badge for Transectizer")
+
+Taking into account that nothing of this could be done without QGIS, feel free to cite it as well in your papers. See details about this in http://hub.qgis.org/wiki/17/QGIS_Citation_Repository
+
+
 Things to be aware of
 =====================
 
