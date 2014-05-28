@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 4.0.0">
+<meta name="generator" content="ReText 4.1.2">
 <title>help_en</title>
 </head>
 <body>
@@ -25,6 +25,10 @@
 <p>Additionally, if you really feel in the mood of rewarding me, just send me a postcard from where you live. I'll be proud of showing it to my kid. Feel free of contact me through jtorlistas//at//gmail.com</p>
 <h1>Things to be aware of</h1>
 <p>Transectizer positions the stations using <a href="http://en.wikipedia.org/wiki/Vincenty's_formulae" target="_blank">Vincenty's direct formula</a>, using the WGS84 ellipsoid to perform the calculations. They are made feeding Vincenty's formula with the same inital point but different destination distances. These distances are the <em>n-multiples</em> of the the distance between stations, being <em>n</em> the number of the station to be deployed. But another approach could be to fix the distance but move the point for calculation: First point should be the start point, second point is calculated from first, third from the second, and so on. Providing that these two approaches render different results, if you feel that either the calculation proceeding I've chosen is wrong or you think that the two methods should be available for the user to choose, please contact me. I'll be glad to modify Transectizer in the best possible way.</p>
+<p>The reference for T. Vincenty's work is:</p>
+<pre><code>Vincenty, T., (1975) Direct and inverse solutions on the ellipsoid
+with application of nested equations, Survey Review, Vol. 23, No. 176, pp. 88-93.
+</code></pre>
 <h1>Usage</h1>
 <p>The basic operation of Transectizer is pretty simple: You choose a point layer to operate, define your transect line, set the distance between the stations to be deployed and the number of them and that's all... Transectizer will add each station as a new feature into your layer.</p>
 <p>Transectizer dialog is organized into three separate tabs: One for choosing the layer where Transectizer will do its work, another for the definition of the transenct and a last one for providing station details.</p>

@@ -39,6 +39,11 @@ Algunas advertencias
 
 Transectizer calcula las posiciones de las estaciones haciendo uso de la <a href="http://es.wikipedia.org/wiki/F%C3%B3rmulas_de_Vincenty" target="_blank">fórmula directa de Vincenty</a> y el elipsoide WGS84 para la realización de los cálculos, pasando a la fórmula el mismo punto inicial pero diferentes distancias hasta el destino. Estas distancias son los *n-múltiplos* de la distancia entre estaciones, siendo *n* el número de estación a ser posicionada. Pero otra aproximación consiste en fijar la distancia que se le pasa a la fórmula pero moviendo el punto desde el que se efectúa el cálculo: El primer punto es el punto de comienzo, el segundo se calcula desde el primero, el tercero desde el segundo y así sucesivamente. Dado que estas dos aproximaciones devuelven resultados diferentes, si cree que o bien el método de cálculo que he escogido para Transectizer no es válido o, que por el contrario, que ambos métodos deben estar disponibles para que el usuario escoja uno u otro en función de sus necesidades, contacte conmigo. Estaŕe encantado de modificar Transectizer de la mejor manera posible.
 
+La referencia del trabajo de T. Vincenty es:
+
+    Vincenty, T., (1975) Direct and inverse solutions on the ellipsoid
+    with application of nested equations, Survey Review, Vol. 23, No. 176, pp. 88-93.
+
 Uso
 ===
 

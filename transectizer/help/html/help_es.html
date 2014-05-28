@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 4.0.0">
+<meta name="generator" content="ReText 4.1.2">
 <title>help_es</title>
 </head>
 <body>
@@ -24,6 +24,10 @@ Usted debería haber recibido una copia de la Licencia Pública General GNU junt
 <p>Si, además, se siente realmente con ganas de recompensar mi esfuerzo, Contacte conmigo a través de correo electrónico o twitter y envíeme una postal desde donde viva. Será un honor incorporarla a mi (aún inexistente) colección de postales y enseñárselas, orgulloso, a mi niño de 4 años.</p>
 <h1>Algunas advertencias</h1>
 <p>Transectizer calcula las posiciones de las estaciones haciendo uso de la <a href="http://es.wikipedia.org/wiki/F%C3%B3rmulas_de_Vincenty" target="_blank">fórmula directa de Vincenty</a> y el elipsoide WGS84 para la realización de los cálculos, pasando a la fórmula el mismo punto inicial pero diferentes distancias hasta el destino. Estas distancias son los <em>n-múltiplos</em> de la distancia entre estaciones, siendo <em>n</em> el número de estación a ser posicionada. Pero otra aproximación consiste en fijar la distancia que se le pasa a la fórmula pero moviendo el punto desde el que se efectúa el cálculo: El primer punto es el punto de comienzo, el segundo se calcula desde el primero, el tercero desde el segundo y así sucesivamente. Dado que estas dos aproximaciones devuelven resultados diferentes, si cree que o bien el método de cálculo que he escogido para Transectizer no es válido o, que por el contrario, que ambos métodos deben estar disponibles para que el usuario escoja uno u otro en función de sus necesidades, contacte conmigo. Estaŕe encantado de modificar Transectizer de la mejor manera posible.</p>
+<p>La referencia del trabajo de T. Vincenty es:</p>
+<pre><code>Vincenty, T., (1975) Direct and inverse solutions on the ellipsoid
+with application of nested equations, Survey Review, Vol. 23, No. 176, pp. 88-93.
+</code></pre>
 <h1>Uso</h1>
 <p>La operación básica de Transectizer es simple: Escoja una capa vectorial de puntos sobre la que operar, defina la línea del transecto, establezca la distancia entre las estaciones que se posicionarán y su número y ¡¡listo!! Transectizer añadirá cada estación como un nuevo objeto en su capa.</p>
 <h2>Escogiendo la capa de trabajo</h2>

@@ -41,6 +41,11 @@ Things to be aware of
 
 Transectizer positions the stations using <a href="http://en.wikipedia.org/wiki/Vincenty's_formulae" target="_blank">Vincenty's direct formula</a>, using the WGS84 ellipsoid to perform the calculations. They are made feeding Vincenty's formula with the same inital point but different destination distances. These distances are the *n-multiples* of the the distance between stations, being *n* the number of the station to be deployed. But another approach could be to fix the distance but move the point for calculation: First point should be the start point, second point is calculated from first, third from the second, and so on. Providing that these two approaches render different results, if you feel that either the calculation proceeding I've chosen is wrong or you think that the two methods should be available for the user to choose, please contact me. I'll be glad to modify Transectizer in the best possible way.
 
+The reference for T. Vincenty's work is:
+
+    Vincenty, T., (1975) Direct and inverse solutions on the ellipsoid
+    with application of nested equations, Survey Review, Vol. 23, No. 176, pp. 88-93.
+
 Usage
 =====
 
